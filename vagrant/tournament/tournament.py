@@ -10,17 +10,43 @@ def connect():
     """Connect to the PostgreSQL database.  Returns a database connection."""
     return psycopg2.connect("dbname=tournament")
 
+def query(sql):
+    """Executes a query on the database. Doesn't return any result."""
+    conn = connect()
+    c = conn.cursor()
+    try:
+        c.execute(sql)
+        conn.commit()
+    finally:
+        # Always close the connection
+        conn.close()
+        
+def getQueryResult(sql):
+    conn = connect()
+    c = conn.cursor()
+    try:
+        c.execute(sql)
+        result = c.fetchall()
+        return result
+    finally:
+        # Always close the connection
+        conn.close()
 
 def deleteMatches():
     """Remove all the match records from the database."""
+    query("DELETE FROM matches;")
 
 
 def deletePlayers():
     """Remove all the player records from the database."""
-
+    query("DELETE FROM players;")
 
 def countPlayers():
     """Returns the number of players currently registered."""
+    result = getQueryResult("SELECT count(*) FROM players;")
+    # The count value is the first (and only) column of the 
+    # first (and only) row
+    return result[0][0]
 
 
 def registerPlayer(name):
@@ -32,6 +58,15 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
+    conn = connect()
+    c = conn.cursor()
+    try:
+        # Using query parameters to prevent SQL injection
+        c.execute("INSERT INTO players (name) values(%s)", (name,))
+        conn.commit()
+    finally:
+        # Always close the connection
+        conn.close()
 
 
 def playerStandings():

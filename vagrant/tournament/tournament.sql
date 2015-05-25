@@ -34,7 +34,10 @@ CREATE TABLE matches (
 
 -- View with the player standings
 CREATE VIEW standings AS
-SELECT players.id, players.name, won.won_matches, played.played_matches
+SELECT players.id, players.name, won.won_matches, 
+CASE WHEN played.played_matches IS NULL THEN 0
+    ELSE played.played_matches
+    END AS played_matches
 FROM players
 LEFT JOIN (SELECT players.id, count(matches.id_winner) as won_matches FROM players
 LEFT JOIN matches ON players.id = matches.id_winner GROUP BY players.id) as won

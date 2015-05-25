@@ -82,6 +82,8 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
+    result = getQueryResult("SELECT * FROM standings;")
+    return result
 
 
 def reportMatch(winner, loser):
@@ -91,6 +93,15 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
+    conn = connect()
+    c = conn.cursor()
+    try:
+        c.execute("INSERT INTO matches VALUES (%s, %s, %s)", (
+            winner, loser, winner
+        ))
+        conn.commit()
+    finally:
+        conn.close()
  
  
 def swissPairings():
@@ -108,5 +119,13 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
-
-
+    standings = playerStandings()
+    
+    i = 0
+    pairing = []
+    while i < len(standings):
+        pairing.append((standings[i][0], standings[i][1], 
+                        standings[i + 1][0], standings[i + 1][1]))
+        i = i + 2
+    
+    return pairing

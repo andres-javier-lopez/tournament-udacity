@@ -36,10 +36,10 @@ CREATE TABLE matches (
 CREATE VIEW standings AS
 SELECT players.id, players.name, won.won_matches, played.played_matches
 FROM players
-JOIN (SELECT players.id, count(matches.id_winner) as won_matches FROM players
+LEFT JOIN (SELECT players.id, count(matches.id_winner) as won_matches FROM players
 LEFT JOIN matches ON players.id = matches.id_winner GROUP BY players.id) as won
 ON won.id = players.id
-JOIN (SELECT players.id, count(*) as played_matches FROM matches, players 
+LEFT JOIN (SELECT players.id, count(*) as played_matches FROM matches, players 
 WHERE id_player1 = players.id OR id_player2 = players.id GROUP BY players.id) 
 AS played ON players.id = played.id 
 ORDER BY won_matches DESC;

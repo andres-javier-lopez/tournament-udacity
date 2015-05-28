@@ -11,12 +11,20 @@ DROP DATABASE tournament;
 CREATE DATABASE tournament;
 \c tournament
 
+-- Tournaments managed by the application
+--
+CREATE TABLE tournaments (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100)
+);
+
 -- Players that participate in the tournament
 -- Attributes:
 --  id: unique identifier for a player
 --  name: name of the player
 CREATE TABLE players (
     id SERIAL PRIMARY KEY,
+    id_tournament INTEGER NOT NULL REFERENCES tournaments(id),
     name VARCHAR(50)
 );
 
@@ -34,7 +42,7 @@ CREATE TABLE matches (
 
 -- View with the player standings
 CREATE VIEW standings AS
-SELECT players.id, players.name, won.won_matches, 
+SELECT players.id, players.id_tournament, players.name, won.won_matches, 
 CASE WHEN played.played_matches IS NULL THEN 0
     ELSE played.played_matches
     END AS played_matches

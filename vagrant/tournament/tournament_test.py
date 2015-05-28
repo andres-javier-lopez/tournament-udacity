@@ -8,11 +8,15 @@ def testDeleteMatches():
     deleteMatches()
     print "1. Old matches can be deleted."
 
+def testDeletePlayers():
+    deletePlayers()
+    print "2. Player records can be deleted."
 
 def testDelete():
     deleteMatches()
     deletePlayers()
-    print "2. Player records can be deleted."
+    deleteTournaments()
+    print "2.1 Tournament records can be deleted."
 
 
 def testCount():
@@ -30,7 +34,9 @@ def testCount():
 def testRegister():
     deleteMatches()
     deletePlayers()
-    registerPlayer("Chandra Nalaar")
+    deleteTournaments()
+    id_tournament = registerTournament("games")
+    registerPlayer(id_tournament, "Chandra Nalaar")
     c = countPlayers()
     if c != 1:
         raise ValueError(
@@ -41,10 +47,12 @@ def testRegister():
 def testRegisterCountDelete():
     deleteMatches()
     deletePlayers()
-    registerPlayer("Markov Chaney")
-    registerPlayer("Joe Malik")
-    registerPlayer("Mao Tsu-hsi")
-    registerPlayer("Atlanta Hope")
+    deleteTournaments()
+    id_tournament = registerTournament("games")
+    registerPlayer(id_tournament, "Markov Chaney")
+    registerPlayer(id_tournament, "Joe Malik")
+    registerPlayer(id_tournament, "Mao Tsu-hsi")
+    registerPlayer(id_tournament, "Atlanta Hope")
     c = countPlayers()
     if c != 4:
         raise ValueError(
@@ -59,9 +67,11 @@ def testRegisterCountDelete():
 def testStandingsBeforeMatches():
     deleteMatches()
     deletePlayers()
-    registerPlayer("Melpomene Murray")
-    registerPlayer("Randy Schwartz")
-    standings = playerStandings()
+    deleteTournaments()
+    id_tournament = registerTournament("games")
+    registerPlayer(id_tournament, "Melpomene Murray")
+    registerPlayer(id_tournament, "Randy Schwartz")
+    standings = playerStandings(id_tournament)
     if len(standings) < 2:
         raise ValueError("Players should appear in playerStandings even before "
                          "they have played any matches.")
@@ -82,15 +92,17 @@ def testStandingsBeforeMatches():
 def testReportMatches():
     deleteMatches()
     deletePlayers()
-    registerPlayer("Bruno Walton")
-    registerPlayer("Boots O'Neal")
-    registerPlayer("Cathy Burton")
-    registerPlayer("Diane Grant")
-    standings = playerStandings()
+    deleteTournaments()
+    id_tournament = registerTournament("games")
+    registerPlayer(id_tournament, "Bruno Walton")
+    registerPlayer(id_tournament, "Boots O'Neal")
+    registerPlayer(id_tournament, "Cathy Burton")
+    registerPlayer(id_tournament, "Diane Grant")
+    standings = playerStandings(id_tournament)
     [id1, id2, id3, id4] = [row[0] for row in standings]
     reportMatch(id1, id2)
     reportMatch(id3, id4)
-    standings = playerStandings()
+    standings = playerStandings(id_tournament)
     for (i, n, w, m) in standings:
         if m != 1:
             raise ValueError("Each player should have one match recorded.")
@@ -104,15 +116,17 @@ def testReportMatches():
 def testPairings():
     deleteMatches()
     deletePlayers()
-    registerPlayer("Twilight Sparkle")
-    registerPlayer("Fluttershy")
-    registerPlayer("Applejack")
-    registerPlayer("Pinkie Pie")
-    standings = playerStandings()
+    deleteTournaments()
+    id_tournament = registerTournament("games")
+    registerPlayer(id_tournament, "Twilight Sparkle")
+    registerPlayer(id_tournament, "Fluttershy")
+    registerPlayer(id_tournament, "Applejack")
+    registerPlayer(id_tournament, "Pinkie Pie")
+    standings = playerStandings(id_tournament)
     [id1, id2, id3, id4] = [row[0] for row in standings]
     reportMatch(id1, id2)
     reportMatch(id3, id4)
-    pairings = swissPairings()
+    pairings = swissPairings(id_tournament)
     if len(pairings) != 2:
         raise ValueError(
             "For four players, swissPairings should return two pairs.")
@@ -127,6 +141,7 @@ def testPairings():
 
 if __name__ == '__main__':
     testDeleteMatches()
+    testDeletePlayers()
     testDelete()
     testCount()
     testRegister()
